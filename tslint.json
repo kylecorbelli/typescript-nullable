@@ -5,6 +5,8 @@
   ],
   "jsRules": {},
   "rules": {
+    "curly": [ true, "ignore-same-line" ],
+    "only-arrow-functions": false,
     "quotemark": [ true, "single" ],
     "semicolon": [ true, "never" ],
     "space-before-function-paren": true

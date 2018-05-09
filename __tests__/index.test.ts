@@ -3,10 +3,7 @@ import {
   curry,
   toUpper,
 } from 'ramda'
-import {
-  None,
-  Nullable,
-} from '../src/index'
+import { Nullable } from '../src/index'
 
 describe('the Nullable module', () => {
   const name: string = 'noob noob'
@@ -14,14 +11,14 @@ describe('the Nullable module', () => {
   describe('Nullable.map', () => {
     describe('when given a None', () => {
       it('returns a None', () => {
-        const result: Nullable<string> = Nullable.map(toUpper, null) as Nullable<string>
+        const result = Nullable.map(toUpper)(null)
         expect(result).toEqual(null)
       })
     })
 
     describe('when given a concrete value', () => {
       it('applies the provided function to the concrete value value', () => {
-        const result: Nullable<string> = Nullable.map(toUpper, name) as Nullable<string>
+        const result = Nullable.map(toUpper)(name)
         expect(result).toEqual(toUpper(name))
       })
     })
@@ -62,14 +59,14 @@ describe('the Nullable module', () => {
   describe('Nullable.withDefault', () => {
     describe('when given a default value and a None', () => {
       it('returns the default value', () => {
-        const result = Nullable.withDefault(name, null)
+        const result = Nullable.withDefault(name)(null)
         expect(result).toBe(name)
       })
     })
 
     describe('when given a default value and a concrete value', () => {
       it('returns the concrete value value', () => {
-        const result = Nullable.withDefault('foo', name)
+        const result = Nullable.withDefault('foo')(name)
         expect(result).toBe(name)
       })
     })
@@ -78,21 +75,21 @@ describe('the Nullable module', () => {
   describe('Nullable.ap', () => {
     describe('when the applicative Nullable is None', () => {
       it('returns a None', () => {
-        const result = Nullable.ap(null, name)
+        const result = Nullable.ap(null)(name)
         expect(result).toEqual(null)
       })
     })
 
     describe('when the target Nullable is None', () => {
       it('returns a None', () => {
-        const result = Nullable.ap(toUpper, null)
+        const result = Nullable.ap(toUpper)(null)
         expect(result).toEqual(null)
       })
     })
 
     describe('when both the applicative and target Nullables are Justs', () => {
       it('applies the wrapped function in the applicative Nullable to value in the target Nullable', () => {
-        const result = Nullable.ap(toUpper, name)
+        const result = Nullable.ap(toUpper)(name)
         expect(result).toEqual(toUpper(name))
       })
     })
