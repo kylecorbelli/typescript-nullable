@@ -26,7 +26,10 @@ function nullableAndThen<A, B> (func: (val: A) => Nullable<B>, nullable: Nullabl
     : func(nullable as A)
 }
 
-function nullableAp<A, B> (applicativeNullable: Nullable<(val: A) => B>, targetNullable: Nullable<A>): Nullable<B> {
+function nullableAp<A, B> (
+  applicativeNullable: Nullable<(val: A) => B>,
+  targetNullable: Nullable<A>,
+): Nullable<B> {
   return isNone(applicativeNullable) || isNone(targetNullable)
     ? null
     : (applicativeNullable as (val: A) => B)(targetNullable as A)
