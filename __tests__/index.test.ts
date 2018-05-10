@@ -75,22 +75,48 @@ describe('the Nullable module', () => {
   describe('Nullable.ap', () => {
     describe('when the applicative Nullable is None', () => {
       it('returns a None', () => {
-        const result = Nullable.ap(null)(name)
+        const result = Nullable.ap(name)(null)
         expect(result).toEqual(null)
       })
     })
 
     describe('when the target Nullable is None', () => {
       it('returns a None', () => {
-        const result = Nullable.ap(toUpper)(null)
+        const result = Nullable.ap(null as Nullable<string>)(toUpper)
         expect(result).toEqual(null)
       })
     })
 
     describe('when both the applicative and target Nullables are Justs', () => {
       it('applies the wrapped function in the applicative Nullable to value in the target Nullable', () => {
-        const result = Nullable.ap(toUpper)(name)
+        const result = Nullable.ap(name)(toUpper)
         expect(result).toEqual(toUpper(name))
+      })
+    })
+
+    describe('lifting functions', () => {
+      const addThreeNumbers = (a: number) => (b: number) => (c: number) => a + b + c
+
+      describe('when everything goes according to plan', () => {
+        it('lifts a "regular" function into Nullable context and returns the correct value', () => {
+          const result = compose(
+            Nullable.ap(3),
+            Nullable.ap(2),
+            Nullable.ap(1),
+          )(addThreeNumbers)
+          expect(result).toBe(1 + 2 + 3)
+        })
+      })
+
+      describe('when we exprience an absence', () => {
+        it('lifts a "regular" function into Nullable context and returns null', () => {
+          const result = compose(
+            Nullable.ap(3),
+            Nullable.ap(null as Nullable<number>),
+            Nullable.ap(1),
+          )(addThreeNumbers)
+          expect(result).toBe(null)
+        })
       })
     })
   })
