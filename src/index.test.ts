@@ -3,7 +3,7 @@ import {
   curry,
   toUpper,
 } from 'ramda'
-import { Nullable } from '../src/index'
+import { Nullable } from '.'
 
 describe('the Nullable module', () => {
   const name: string = 'noob noob'
