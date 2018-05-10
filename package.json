@@ -1,10 +1,13 @@
 {
   "name": "typescript-nullable",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A TypeScript Nullable<T> Type and Monad Compliant Utility Functions",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "lint": "tslint --project tsconfig.json && npm run tsc-check",
+    "prepublish": "npm run build",
     "test": "jest",
     "test:watch": "jest --watch",
     "tsc-check": "tsc --noEmit"
