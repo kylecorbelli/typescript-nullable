@@ -1,6 +1,6 @@
 {
   "name": "typescript-nullable",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A TypeScript Nullable<T> Type and Monad Compliant Utility Functions",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
