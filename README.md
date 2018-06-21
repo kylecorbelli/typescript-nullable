@@ -9,8 +9,6 @@ Glad you asked. This is a type-safe formalization of the concept of possibly abs
 
 Think of it like Haskell’s or Elm’s `Maybe` type and corresponding module of functions for dealing with `Maybe`. It is functional to its core, with typed and curried pure functions.
 
-The utility functions here allow the `Nullable` type to act as a TypeScript equivalent of an instance of the functor, applicative functor, and monad "typeclasses".
-
 ## Installation
 From the command line:
 ```
