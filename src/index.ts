@@ -2,46 +2,80 @@ export type None = null | undefined
 
 export type Nullable<T> = T | None
 
-function nullableIsNone<T> (nullable: Nullable<T>): boolean {
-  return nullable === null || nullable === undefined
+const isNone = <T>(nullable: Nullable<T>): boolean =>
+  nullable === null || nullable === undefined
+
+const mapHelper = <A, B> (func: (val: A) => B, nullable: Nullable<A>): Nullable<B> =>
+  nullable !== undefined && nullable !== null
+    ? func(nullable)
+    : null
+
+function map <A, B> (func: (val: A) => B, nullable: Nullable<A>): Nullable<B>
+function map <A, B> (func: (val: A) => B): (nullable: Nullable<A>) => Nullable<B>
+function map <A, B> (func: (val: A) => B, nullable?: Nullable<A>) {
+  return arguments.length === 1
+    ? (nullable_: Nullable<A>): Nullable<B> => mapHelper(func, nullable_)
+    : mapHelper(func, nullable)
 }
 
-function nullableMap<A, B> (func: (val: A) => B): (nullable: Nullable<A>) => Nullable<B> {
-  return function (nullable: Nullable<A>): Nullable<B> {
-    return nullableIsNone(nullable)
-      ? null
-      : func(nullable as A)
-  }
+const maybeHelper = <A, B> (defaultVal: B, f: (a: A) => B, nullable: Nullable<A>): B =>
+  nullable !== undefined && nullable !== null
+    ? f(nullable)
+    : defaultVal
+
+function maybe <A, B> (defaultVal: B, f: (a: A) => B, nullable: Nullable<A>): B
+function maybe <A, B> (defaultVal: B, f: (a: A) => B): (nullable: Nullable<A>) => B
+function maybe <A, B> (defaultVal: B, f: (a: A) => B, nullable?: Nullable<A>) {
+  return arguments.length === 2
+    ? (nullable_: Nullable<A>): B => maybeHelper(defaultVal, f, nullable_)
+    : maybeHelper(defaultVal, f, nullable)
 }
 
-function nullableWithDefault<T> (defaultVal: T): (nullable: Nullable<T>) => T {
-  return function (nullable: Nullable<T>): T {
-    return nullableIsNone(nullable)
-      ? defaultVal
-      : nullable as T
-  }
+const withDefaultHelper = <T> (defaultVal: T, nullable: Nullable<T>): T =>
+  nullable !== undefined && nullable !== null
+    ? nullable
+    : defaultVal
+
+function withDefault <T> (defaultVal: T, nullable: Nullable<T>): T
+function withDefault <T> (defaultVal: T): (nullable: Nullable<T>) => T
+function withDefault <T> (defaultVal: T, nullable?: Nullable<T>) {
+  return arguments.length === 1
+    ? (nullable_: Nullable<T>): T => withDefaultHelper(defaultVal, nullable_)
+    : withDefaultHelper(defaultVal, nullable)
 }
 
-function nullableAndThen<A, B> (func: (val: A) => Nullable<B>): (nullable: Nullable<A>) => Nullable<B> {
-  return function (nullable: Nullable<A>): Nullable<B> {
-    return nullableIsNone(nullable)
-      ? null
-      : func(nullable as A)
-  }
+const andThenHelper = <A, B> (func: (val: A) => Nullable<B>, nullable: Nullable<A>): Nullable<B> =>
+  nullable !== undefined && nullable !== null
+    ? func(nullable)
+    : null
+
+function andThen <A, B> (func: (val: A) => Nullable<B>, nullable: Nullable<A>): Nullable<B>
+function andThen <A, B> (func: (val: A) => Nullable<B>): (nullable: Nullable<A>) => Nullable<B>
+function andThen <A, B> (func: (val: A) => Nullable<B>, nullable?: Nullable<A>) {
+  return arguments.length === 1
+    ? (nullable_: Nullable<A>): Nullable<B> => andThenHelper(func, nullable_)
+    : andThenHelper(func, nullable)
 }
 
-function nullableAp<A, B> (targetNullable: Nullable<A>): (applicativeNullable: Nullable<(val: A) => B>) => Nullable<B> {
-  return function (applicativeNullable: Nullable<(val: A) => B>): Nullable<B> {
-    return nullableIsNone(applicativeNullable) || nullableIsNone(targetNullable)
-      ? null
-      : (applicativeNullable as (val: A) => B)(targetNullable as A)
-  }
+const apHelper = <A, B> (targetNullable: Nullable<A>, applicativeNullable: Nullable<(val: A) => B>): Nullable<B> =>
+  (targetNullable !== undefined && targetNullable !== null)
+    && (applicativeNullable !== undefined && applicativeNullable !== null)
+      ? applicativeNullable(targetNullable)
+      : null
+
+function ap <A, B> (targetNullable: Nullable<A>, applicativeNullable: Nullable<(val: A) => B>): Nullable<B>
+function ap <A, B> (targetNullable: Nullable<A>): (applicativeNullable: Nullable<(val: A) => B>) => Nullable<B>
+function ap <A, B> (targetNullable: Nullable<A>, applicativeNullable?: Nullable<(val: A) => B>) {
+  return arguments.length === 1
+    ? (applicativeNullable_: Nullable<(val: A) => B>): Nullable<B> => apHelper(targetNullable, applicativeNullable_)
+    : apHelper(targetNullable, applicativeNullable)
 }
 
 export const Nullable = {
-  andThen: nullableAndThen,
-  ap: nullableAp,
-  isNone: nullableIsNone,
-  map: nullableMap,
-  withDefault: nullableWithDefault,
+  andThen,
+  ap,
+  isNone,
+  map,
+  maybe,
+  withDefault,
 }
