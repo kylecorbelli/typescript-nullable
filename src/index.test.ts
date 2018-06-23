@@ -1,4 +1,5 @@
 import {
+  add,
   compose,
   curry,
   toUpper,
@@ -7,6 +8,13 @@ import { Nullable } from '.'
 
 describe('the Nullable module', () => {
   const name: string = 'noob noob'
+
+  describe('isNone', () => {
+    it('determines if a particular Nullable is None', () => {
+      expect(Nullable.isNone(null)).toBe(true)
+      expect(Nullable.isNone('hi')).toBe(false)
+    })
+  })
 
   describe('Nullable.map', () => {
     describe('when given a None', () => {
@@ -18,7 +26,7 @@ describe('the Nullable module', () => {
 
     describe('when given a concrete value', () => {
       it('applies the provided function to the concrete value value', () => {
-        const result = Nullable.map(toUpper)(name)
+        const result = Nullable.map(toUpper, name)
         expect(result).toEqual(toUpper(name))
       })
     })
@@ -66,7 +74,7 @@ describe('the Nullable module', () => {
 
     describe('when given a default value and a concrete value', () => {
       it('returns the concrete value value', () => {
-        const result = Nullable.withDefault('foo')(name)
+        const result = Nullable.withDefault<string>('foo', name)
         expect(result).toBe(name)
       })
     })
@@ -117,6 +125,20 @@ describe('the Nullable module', () => {
           )(addThreeNumbers)
           expect(result).toBe(null)
         })
+      })
+    })
+  })
+
+  describe('Nullable.maybe', () => {
+    describe('when given a None', () => {
+      it('returns the default value', () => {
+        expect(Nullable.maybe(7, add(83), null)).toBe(7)
+      })
+    })
+
+    describe('when given a concrete value', () => {
+      it('applies the provided function to the concrete value and returns the resulting return value', () => {
+        expect(Nullable.maybe(7, add(83), 34)).toBe(83 + 34)
       })
     })
   })

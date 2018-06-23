@@ -7,7 +7,7 @@
 ## What is This?
 Glad you asked. This is a type-safe formalization of the concept of possibly absent values in TypeScript. It is perhaps even more importantly a module of type-safe utility functions that deal with possibly absent values.
 
-Think of it like Haskell’s or Elm’s `Maybe` type and corresponding module of functions for dealing with `Maybe`. It is functional to its core, with typed and curried pure functions.
+Think of it roughly like Haskell’s or Elm’s `Maybe` type and corresponding module of functions for dealing with `Maybe`. It is functional to its core, with typed and curried pure functions.
 
 ## Installation
 From the command line:
@@ -21,19 +21,19 @@ import { Nullable } from 'typescript-nullable'
 
 ## Nullable Type Definition
 ```TypeScript
-export type None = null | undefined
+type None = null | undefined
 
-export type Nullable<T> = T | None
+type Nullable<T> = T | None
 ```
 
 ## Module Utility Functions
-Note: none of these functions takes more than one argument at a time. If one of them does require more than one input, it takes them one at a time. For example, instead of something like `add(2, 5)` it would be called like `add(2)(5)`. Like Haskell but with parens.
+All utility functions are curried to the extent that their _final_ argument is optional. If a final argument is not provided, the function will return another function that expects that final argument.
 
 #### Nullable.isNone
 Determines if a provided `Nullable` is `None`.
 ###### Type Annotation
 ```
-Nullable.isNone<T> :: (nullable: Nullable<T>): boolean
+<T>(nullable: Nullable<T>): boolean
 ```
 ###### Example Usage
 ```TypeScript
@@ -46,21 +46,21 @@ Nullable.isNone(undefined) // true
 Applies the provided function to the provided `Nullable` only if it is not `None`. Returns `null` otherwise.
 ###### Type Annotation
 ```
-Nullable.map<A, B> :: (func: (val: A) => B): (nullable: Nullable<A>) => Nullable<B>
+<A, B>(func: (val: A) => B): (nullable: Nullable<A>) => Nullable<B>
 ```
 ###### Example Usage
 ```TypeScript
 const toUpper = (text: string): string => text.toUpperCase()
-Nullable.map(toUpper)('noob noob') // NOOB NOOB
-Nullable.map(toUpper)(null) // null
-Nullable.map(toUpper)(undefined) // null
+Nullable.map(toUpper, 'noob noob') // NOOB NOOB
+Nullable.map(toUpper, null) // null
+Nullable.map(toUpper, undefined) // null
 ```
 
 #### Nullable.withDefault
 Provided a default value and a `Nullable`, will return the default value when the `Nullable` is `None`. Will return the concrete value of the `Nullable` if it is, in fact, concrete.
 ###### Type Annotation
 ```
-Nullable.withDefault<T> :: (defaultVal: T): (nullable: Nullable<T>) => T
+<T>(defaultVal: T): (nullable: Nullable<T>) => T
 ```
 ###### Example Usage
 ```TypeScript
@@ -68,11 +68,24 @@ Nullable.withDefault('morty')('rick') // 'rick'
 Nullable.withDefault('morty')(null) // 'morty'
 ```
 
+#### Nullable.maybe
+Provided a default value, a function, and a `Nullable`, will return the default value when the `Nullable` is `None`. Will return the provided function applied to the concrete value of the `Nullable` if it is, in fact, concrete.
+###### Type Annotation
+```
+<A, B>(defaultVal: B, f: (a: A) => B): (nullable: Nullable<A>) => B
+```
+###### Example Usage
+```TypeScript
+import { add } from 'ramda'
+Nullable.maybe(7, add(83), null)) // 7
+Nullable.maybe(7, add(83), 34)) // 117
+```
+
 #### Nullable.andThen
 Used for chaining functions that take a raw value of type `T` but return a `Nullable<T>`. This is like Haskell's `bind` or `>>=`.
 ###### Type Annotation
 ```
-Nullable.andThen<A, B> :: (func: (val: A) => Nullable<B>): (nullable: Nullable<A>) => Nullable<B>
+Nullable.andThen<A, B>(func: (val: A) => Nullable<B>): (nullable: Nullable<A>) => Nullable<B>
 ```
 ###### Example Usage
 ```TypeScript
@@ -104,7 +117,7 @@ compose(
 Used for writing in the applicative style. For "lifting" functions into the `Nullable` context.
 ###### Type Annotation
 ```
-Nullable.ap<A, B> :: (targetNullable: Nullable<A>): (applicativeNullable: Nullable<(val: A) => B>) => Nullable<B>
+Nullable.ap<A, B>(targetNullable: Nullable<A>): (applicativeNullable: Nullable<(val: A) => B>) => Nullable<B>
 ```
 ###### Example Usage
 ```TypeScript
