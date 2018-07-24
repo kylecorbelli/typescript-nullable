@@ -14,6 +14,35 @@ describe('the Nullable module', () => {
       expect(Nullable.isNone(null)).toBe(true)
       expect(Nullable.isNone('hi')).toBe(false)
     })
+
+    it('provides a typeguard', () => {
+      const handleNullable = (someNullable: Nullable<string>): string => {
+        if (!Nullable.isNone(someNullable)) {
+          return someNullable
+        }
+        return 'value was undefined'
+      }
+      expect(handleNullable('oooh wee!')).toBe('oooh wee!')
+      expect(handleNullable(null)).toBe('value was undefined')
+    })
+  })
+
+  describe('isSome', () => {
+    it('determines if a particular Nullable is a concrete value', () => {
+      expect(Nullable.isSome(null)).toBe(false)
+      expect(Nullable.isSome('hi')).toBe(true)
+    })
+
+    it('provides a typeguard', () => {
+      const handleNullable = (someNullable: Nullable<string>): string => {
+        if (Nullable.isSome(someNullable)) {
+          return someNullable
+        }
+        return 'value was undefined'
+      }
+      expect(handleNullable('oooh wee!')).toBe('oooh wee!')
+      expect(handleNullable(null)).toBe('value was undefined')
+    })
   })
 
   describe('Nullable.map', () => {

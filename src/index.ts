@@ -2,8 +2,11 @@ export type None = null | undefined
 
 export type Nullable<T> = T | None
 
-const isNone = <T>(nullable: Nullable<T>): boolean =>
+const isNone = <T>(nullable: Nullable<T>): nullable is None =>
   nullable === null || nullable === undefined
+
+const isSome = <T>(nullable: Nullable<T>): nullable is T =>
+  nullable !== null && nullable !== undefined
 
 const mapHelper = <A, B> (func: (val: A) => B, nullable: Nullable<A>): Nullable<B> =>
   nullable !== undefined && nullable !== null
@@ -75,6 +78,7 @@ export const Nullable = {
   andThen,
   ap,
   isNone,
+  isSome,
   map,
   maybe,
   withDefault,
