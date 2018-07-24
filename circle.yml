@@ -3,5 +3,6 @@ machine:
     version: 8.4.0
 test:
   override:
+    - npm run lint
     - npm test -- --coverage
     - ~/typescript-nullable/node_modules/.bin/codecov -t $CODECOV_TOKEN

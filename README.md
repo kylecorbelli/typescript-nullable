@@ -1,13 +1,11 @@
 # TypeScript Nullable
 
-[![CircleCI](https://circleci.com/gh/kylecorbelli/typescript-nullable.svg?style=shield)](https://circleci.com/gh/kylecorbelli/typescript-nullable)
-
-[![codecov](https://codecov.io/gh/kylecorbelli/typescript-nullable/branch/master/graph/badge.svg)](https://codecov.io/gh/kylecorbelli/typescript-nullable)
+[![npm version](https://img.shields.io/npm/v/typescript-nullable.svg?style=shield)](https://www.npmjs.com/package/typescript-nullable) [![CircleCI](https://circleci.com/gh/kylecorbelli/typescript-nullable.svg?style=shield)](https://circleci.com/gh/kylecorbelli/typescript-nullable) [![codecov](https://codecov.io/gh/kylecorbelli/typescript-nullable/branch/master/graph/badge.svg)](https://codecov.io/gh/kylecorbelli/typescript-nullable)
 
 ## What is This?
 Glad you asked. This is a type-safe formalization of the concept of possibly absent values in TypeScript. It is perhaps even more importantly a module of type-safe utility functions that deal with possibly absent values.
 
-Think of it roughly like Haskell’s or Elm’s `Maybe` type and corresponding module of functions for dealing with `Maybe`. It is functional to its core, with typed and curried pure functions.
+Think of it roughly like a JavaScript-friendly version of Haskell’s or Elm’s `Maybe` type and corresponding module of functions for dealing with `Maybe`. It is functional to its core, with typed and curried pure functions.
 
 ## Installation
 From the command line:
@@ -27,19 +25,46 @@ type Nullable<T> = T | None
 ```
 
 ## Module Utility Functions
+This module also ships with a `Nullable` object that contains multiple useful functions for dealing with potentially absent values. Thus we have both a `Nullable` type and a `Nullable` object of utility functions.
+
 All utility functions are curried to the extent that their _final_ argument is optional. If a final argument is not provided, the function will return another function that expects that final argument.
 
 #### Nullable.isNone
-Determines if a provided `Nullable` is `None`.
+Determines if a provided `Nullable` is `None` and provides a type guard.
 ###### Type Annotation
 ```
-<T>(nullable: Nullable<T>): boolean
+<T>(nullable: Nullable<T>): nullable is None
 ```
 ###### Example Usage
 ```TypeScript
 Nullable.isNone('noob noob') // false
 Nullable.isNone(null) // true
 Nullable.isNone(undefined) // true
+
+const possiblyNullValue: Nullable<string> = 'noob noob'
+
+if (Nullable.isNone(possiblyNullValue)) {
+  // in this scope, TypeScript knows possiblyNullValue is a None
+}
+```
+
+#### Nullable.isSome
+Determines if a provided `Nullable` is a concrete value and provides a type guard.
+###### Type Annotation
+```
+<T>(nullable: Nullable<T>): nullable is T
+```
+###### Example Usage
+```TypeScript
+Nullable.isNone('noob noob') // true
+Nullable.isNone(null) // false
+Nullable.isNone(undefined) // false
+
+const possiblyNullValue: Nullable<string> = 'noob noob'
+
+if (Nullable.isSome(possiblyNullValue)) {
+  // in this scope, TypeScript knows possiblyNullValue is a concrete string
+}
 ```
 
 #### Nullable.map
@@ -100,7 +125,7 @@ const safeDivide = curry((a: number, b: number): Nullable<number> => {
 
 compose(
   Nullable.andThen(safeDivide(3)),
-  Nullable.andThen(safeDivide(0)),
+  Nullable.andThen(safeDivide(0)), // this line results in a None value so the rest of the composition chain passes along None without blowing up or throwing an exception
   Nullable.andThen(safeDivide(4)),
   safeDivide(2),
 )(32) // null
