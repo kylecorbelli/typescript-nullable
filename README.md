@@ -56,9 +56,9 @@ Determines if a provided `Nullable` is a concrete value and provides a type guar
 ```
 ###### Example Usage
 ```TypeScript
-Nullable.isNone('noob noob') // true
-Nullable.isNone(null) // false
-Nullable.isNone(undefined) // false
+Nullable.isSome('noob noob') // true
+Nullable.isSome(null) // false
+Nullable.isSome(undefined) // false
 
 const possiblyNullValue: Nullable<string> = 'noob noob'
 
